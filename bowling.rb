@@ -1,31 +1,60 @@
 def turn
-  first = 1 + rand(10)
-  second = 0
+  first = rand(11)
 
-  if first == 10
-    print "X  |"
-  else
-    second = 1 + rand(10 - first)
-
-    if first + second == 10
-      print "#{first} /|"
+  second =
+    if first == 10
+      0
     else
-      print "#{first} #{second}|"
+      rand(11 - first)
+    end
+
+  #puts [first, second].join(" ")
+  [first, second]
+end
+
+def play_game
+  numturns = 10
+  turns = []
+  puts "Press enter to bowl another turn"
+  until turns.length == 10
+    input = gets
+    if input == "\n"
+      turns.push(turn)
+      display_score(turns[-1])
     end
   end
-  $totalpoints = $totalpoints + first + second
+
+  totalpoints = 0
+
+  for i in turns
+    totalpoints += i[0] + i[1]
+  end
+
+  puts
+  puts "Total score is #{totalpoints}"
 end
 
-numturns = 10
-$totalpoints = 0
-puts "_" * 41
-print "|"
-
-until numturns == 0
-  turn
-  numturns = numturns - 1
+def display_score(arr)
+  if arr[0] == 10
+    puts "X  "
+  elsif arr[0]+arr[1] == 10
+    puts "#{arr[0]} /"
+  else
+    puts "#{arr[0]} #{arr[1]}"
+  end
 end
 
-print "\n"
-puts "_" * 41
-puts "Total score is #{$totalpoints}"
+
+play_game
+
+
+# def strike?(turn)
+#   puts turn[0] == 10
+# end
+#
+# def spare?(turn)
+#   turn[0] + turn[1] == 10
+# end
+#
+# is_strike?([10, 0])
+# is_strike?([5, 5])
