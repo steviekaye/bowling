@@ -1,4 +1,4 @@
-def turn
+def bowl
   first = rand(11)
 
   second =
@@ -8,53 +8,138 @@ def turn
       rand(11 - first)
     end
 
-  #puts [first, second].join(" ")
   [first, second]
 end
 
+def strike?(frame)
+  frame[0] == 10
+end
+
+def spare?(frame)
+  frame[0] + frame[1] == 10
+end
+
+def display_score(frame)
+  if strike?(frame)
+    "X  "
+  elsif spare?(frame)
+    "#{frame[0]} /"
+  else
+    "#{frame[0]} #{frame[1]}"
+  end
+end
+
+def game_over?(turns)
+  turns.length == 10
+end
+
+def print_turn_instructions
+  puts "Press enter to bowl a turn"
+end
+
+def print_total_score(turns)
+  if total_score(turns) < 10
+    "  #{total_score(turns)} "
+  elsif total_score(turns) == 100
+    "#{total_score(turns)} "
+  else
+    " #{total_score(turns)} "
+  end
+end
+
+def score_turn(turn)
+  turn[0] + turn[1]
+end
+
+def total_score(turns)
+  turns.map { |t| score_turn(t) }.reduce(0, :+)
+  #turns.map { |x| x[0] + x[1] }.reduce(0, :+)
+end
+
+def print_scoreboard(turns)
+  system "clear"
+  draw_scoreboard_top
+  draw_scoreboard_mid(turns)
+  draw_scoreboard_bot
+end
+
+def draw_scoreboard_top
+  top_left = sprintf("%c", 9484) + # ┌
+  sprintf("%c", 9472) + # ─
+  sprintf("%c", 9472) + # ─
+  sprintf("%c", 9472) # ─
+
+  top_mid = sprintf("%c", 9516) + # ┬
+  sprintf("%c", 9472) + # ─
+  sprintf("%c", 9472) + # ─
+  sprintf("%c", 9472) # ─
+
+  top_right = sprintf("%c", 9516) + # ┬
+  sprintf("%c", 9472) + # ─
+  sprintf("%c", 9472) + # ─
+  sprintf("%c", 9472) + # ─
+  sprintf("%c", 9472) + # ─
+  sprintf("%c\n", 9488) # ┐
+
+  puts top_left + top_mid * 9 + top_right
+end
+
+def draw_scoreboard_mid(turns)
+  i = 0
+  mid_std = []
+  until i == 10
+    mid_std.push(sprintf("%c", 9474) + # │
+    if !turns[i].nil?
+      display_score(turns[i])
+    else
+      "   "
+    end)
+    i +=1
+  end
+  mid_std.push(sprintf("%c", 9474) + # │
+  print_total_score(turns) +
+  sprintf("%c\n", 9474))# │
+  puts mid_std.join("")
+end
+
+def draw_scoreboard_bot
+  bot_left = sprintf("%c", 9492) + # └
+  sprintf("%c", 9472) + # ─
+  sprintf("%c", 9472) + # ─
+  sprintf("%c", 9472) # ─
+
+  bot_mid = sprintf("%c", 9524) + # ┴
+  sprintf("%c", 9472) + # ─
+  sprintf("%c", 9472) + # ─
+  sprintf("%c", 9472) # ─
+
+  bot_right = sprintf("%c", 9524) + # ┴
+  sprintf("%c", 9472) + # ─
+  sprintf("%c", 9472) + # ─
+  sprintf("%c", 9472) + # ─
+  sprintf("%c", 9472) + # ─
+  sprintf("%c\n", 9496)  # ┘
+
+  puts bot_left + bot_mid * 9 + bot_right
+end
+
 def play_game
-  numturns = 10
   turns = []
-  puts "Press enter to bowl another turn"
-  until turns.length == 10
+
+  until game_over?(turns)
+
+    print_turn_instructions
+
     input = gets
     if input == "\n"
-      turns.push(turn)
-      display_score(turns[-1])
+      turns.push(bowl)
+      #display_score(turns[-1])
     end
+
+    print_scoreboard(turns)
   end
 
-  totalpoints = 0
-
-  for i in turns
-    totalpoints += i[0] + i[1]
-  end
-
-  puts
-  puts "Total score is #{totalpoints}"
+  #print_total_score(turns)
 end
-
-def display_score(arr)
-  if arr[0] == 10
-    puts "X  "
-  elsif arr[0]+arr[1] == 10
-    puts "#{arr[0]} /"
-  else
-    puts "#{arr[0]} #{arr[1]}"
-  end
-end
-
 
 play_game
-
-
-# def strike?(turn)
-#   puts turn[0] == 10
-# end
-#
-# def spare?(turn)
-#   turn[0] + turn[1] == 10
-# end
-#
-# is_strike?([10, 0])
-# is_strike?([5, 5])
