@@ -1,3 +1,5 @@
+NUM_TURNS = 10
+
 def bowl
   first = rand(11)
 
@@ -19,31 +21,33 @@ def spare?(frame)
   frame[0] + frame[1] == 10
 end
 
-def display_score(frame)
-  if strike?(frame)
+def format_score(frame)
+  if frame.nil?
+    "   "
+  elsif strike?(frame)
     "X  "
   elsif spare?(frame)
-    "#{frame[0]} /"
+    "#{frame[0]} /".gsub(/0/, '-')
   else
-    "#{frame[0]} #{frame[1]}"
+    "#{frame[0]} #{frame[1]}".gsub(/0/, '-')
   end
 end
 
 def game_over?(turns)
-  turns.length == 10
+  turns.length == NUM_TURNS
 end
 
 def print_turn_instructions
   puts "Press enter to bowl a turn"
 end
 
-def print_total_score(turns)
-  if total_score(turns) < 10
-    "  #{total_score(turns)} "
-  elsif total_score(turns) == 100
-    "#{total_score(turns)} "
+def format_total_score(total)
+  if total < 10
+    "  #{total} "
+  elsif total == 100
+    "#{total} "
   else
-    " #{total_score(turns)} "
+    " #{total} "
   end
 end
 
@@ -53,93 +57,72 @@ end
 
 def total_score(turns)
   turns.map { |t| score_turn(t) }.reduce(0, :+)
-  #turns.map { |x| x[0] + x[1] }.reduce(0, :+)
 end
 
 def print_scoreboard(turns)
   system "clear"
   draw_scoreboard_top
   draw_scoreboard_mid(turns)
-  draw_scoreboard_bot
+  draw_scoreboard_bottom
+end
+
+def horizontal_line(num)
+  "─" * num
+end
+
+def scoreboard_frameline(left_corner, cell, right_corner)
+  left_corner + cell * 10 + horizontal_line(4) + right_corner
 end
 
 def draw_scoreboard_top
-  top_left = sprintf("%c", 9484) + # ┌
-  sprintf("%c", 9472) + # ─
-  sprintf("%c", 9472) + # ─
-  sprintf("%c", 9472) # ─
+  top_cell = horizontal_line(3) + "┬"
 
-  top_mid = sprintf("%c", 9516) + # ┬
-  sprintf("%c", 9472) + # ─
-  sprintf("%c", 9472) + # ─
-  sprintf("%c", 9472) # ─
+  puts scoreboard_frameline("┌", top_cell, "┐")
+end
 
-  top_right = sprintf("%c", 9516) + # ┬
-  sprintf("%c", 9472) + # ─
-  sprintf("%c", 9472) + # ─
-  sprintf("%c", 9472) + # ─
-  sprintf("%c", 9472) + # ─
-  sprintf("%c\n", 9488) # ┐
+def draw_scoreboard_bottom
+  bottom_cell = horizontal_line(3) + "┴"
 
-  puts top_left + top_mid * 9 + top_right
+  puts scoreboard_frameline("└", bottom_cell, "┘")
 end
 
 def draw_scoreboard_mid(turns)
-  i = 0
-  mid_std = []
-  until i == 10
-    mid_std.push(sprintf("%c", 9474) + # │
-    if !turns[i].nil?
-      display_score(turns[i])
-    else
-      "   "
-    end)
-    i +=1
+  mid_std = ""
+  pipe = "│"
+
+  NUM_TURNS.times do |x|
+    mid_std += (pipe + format_score(turns[x]))
   end
-  mid_std.push(sprintf("%c", 9474) + # │
-  print_total_score(turns) +
-  sprintf("%c\n", 9474))# │
-  puts mid_std.join("")
+
+  mid_std += (pipe + format_total_score(total_score(turns)) + pipe)
+  puts mid_std
 end
 
-def draw_scoreboard_bot
-  bot_left = sprintf("%c", 9492) + # └
-  sprintf("%c", 9472) + # ─
-  sprintf("%c", 9472) + # ─
-  sprintf("%c", 9472) # ─
-
-  bot_mid = sprintf("%c", 9524) + # ┴
-  sprintf("%c", 9472) + # ─
-  sprintf("%c", 9472) + # ─
-  sprintf("%c", 9472) # ─
-
-  bot_right = sprintf("%c", 9524) + # ┴
-  sprintf("%c", 9472) + # ─
-  sprintf("%c", 9472) + # ─
-  sprintf("%c", 9472) + # ─
-  sprintf("%c", 9472) + # ─
-  sprintf("%c\n", 9496)  # ┘
-
-  puts bot_left + bot_mid * 9 + bot_right
+def end_message(score)
+  if score > 87
+    puts "Great work! You are the Aliens of bowling!"
+  elsif score > 72
+    puts "Not bad! You are the Alien 3 of bowling!"
+  else
+    puts "Room for improvement! You are the Alien: Resurrection of bowling!"
+  end
 end
 
 def play_game
   turns = []
 
   until game_over?(turns)
-
     print_turn_instructions
 
     input = gets
     if input == "\n"
       turns.push(bowl)
-      #display_score(turns[-1])
     end
 
     print_scoreboard(turns)
   end
-
-  #print_total_score(turns)
+  
+  end_message(total_score(turns))
 end
 
 play_game
