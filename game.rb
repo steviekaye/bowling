@@ -4,6 +4,7 @@ class Game
   def initialize(ui)
     @ui = ui
     @turns = []
+    @running_total = []
   end
 
   def play_turn
@@ -17,11 +18,21 @@ class Game
       @ui.press_enter
     end
 
-    @ui.print_scoreboard(@turns, total_score)
+    @ui.print_scoreboard(@turns, @running_total, total_score)
   end
 
-  def total_score
-    @turns.map { |t| t.score_turn }.reduce(0, :+)
+  def total_score(turns = @turns)
+    turns.map { |t| t.score_turn }.reduce(0, :+)
+  end
+
+  def running_total
+    @turns.map.with_index { |t, i|
+      @running_total[i] = total_score(@turns[0..i])
+    }
+  end
+
+  def get_running_total
+    @running_total
   end
 
   def game_over?
@@ -32,5 +43,6 @@ class Game
 
   def record_turn(turn)
     @turns.push(turn)
+    running_total
   end
 end

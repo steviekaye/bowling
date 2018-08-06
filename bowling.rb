@@ -10,11 +10,15 @@ class Bowling
   end
 
   def play
+    system "clear" # TODO UI concern
     @ui.print_welcome_message
 
     @game.play_turn until @game.game_over?
 
     @ui.print_end_message(@game.total_score)
+
+    #puts @game.get_running_total
+    #puts "Got here"
   end
 end
 

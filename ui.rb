@@ -14,11 +14,12 @@ class UI
     puts "Please press ENTER!"
   end
 
-  def print_scoreboard(turns, total_score)
+  def print_scoreboard(turns, running_total, total_score)
     system "clear"
-    draw_scoreboard_top
-    draw_scoreboard_mid(turns, total_score)
-    draw_scoreboard_bottom
+    draw_scoreboard_top_border
+    draw_scoreboard_frame_score(turns, total_score)
+    draw_scoreboard_running_total(turns, running_total, total_score)
+    draw_scoreboard_bottom_border
   end
 
   def print_end_message(score)
@@ -41,19 +42,19 @@ class UI
     left_corner + cell * 10 + horizontal_line(4) + right_corner
   end
 
-  def draw_scoreboard_top
+  def draw_scoreboard_top_border
     top_cell = horizontal_line(3) + "┬"
 
     puts scoreboard_frameline("┌", top_cell, "┐")
   end
 
-  def draw_scoreboard_bottom
+  def draw_scoreboard_bottom_border
     bottom_cell = horizontal_line(3) + "┴"
 
     puts scoreboard_frameline("└", bottom_cell, "┘")
   end
 
-  def draw_scoreboard_mid(turns, total_score)
+  def draw_scoreboard_frame_score(turns, total_score)
     mid_std = ""
     pipe = "│"
 
@@ -61,7 +62,19 @@ class UI
       mid_std += (pipe + format_score(turns[x]))
     end
 
-    mid_std += (pipe + format_total_score(total_score) + pipe)
+    mid_std += (pipe + " " + format_running_score(total_score) + pipe)
+    puts mid_std
+  end
+
+  def draw_scoreboard_running_total(turns, running_total, total_score)
+    mid_std = ""
+    pipe = "│"
+
+    Bowling::NUM_TURNS.times do |x|
+      mid_std += (pipe + format_running_score(running_total[x]))
+    end
+
+    mid_std += (pipe + " " + format_running_score(total_score) + pipe)
     puts mid_std
   end
 
@@ -77,13 +90,26 @@ class UI
     end
   end
 
-  def format_total_score(total)
-    if total < 10
-      "  #{total} "
-    elsif total == 100
-      "#{total} "
+  # def format_total_score(total)
+  #   if total < 10
+  #     "  #{total} "
+  #   elsif total == 100
+  #     "#{total} "
+  #   else
+  #     " #{total} "
+  #   end
+  # end
+
+  def format_running_score(running_total)
+    # TODO: very similar to format_total_score. Can you use a single FN?
+    if running_total.nil?
+      "   "
+    elsif running_total < 10
+      " #{running_total} "
+    elsif running_total == 100
+      "#{runnning_total}"
     else
-      " #{total} "
+      " #{running_total}"
     end
   end
 end
