@@ -10,7 +10,6 @@ class Bowling
   end
 
   def play
-    system "clear" # TODO UI concern
     @ui.print_welcome_message
 
     @game.play_turn until @game.game_over?

@@ -3,6 +3,7 @@ class UI
   end
 
   def print_welcome_message
+    system "clear"
     puts "Welcome to SK's bowling alley!"
   end
 
@@ -90,24 +91,14 @@ class UI
     end
   end
 
-  # def format_total_score(total)
-  #   if total < 10
-  #     "  #{total} "
-  #   elsif total == 100
-  #     "#{total} "
-  #   else
-  #     " #{total} "
-  #   end
-  # end
-
   def format_running_score(running_total)
-    # TODO: very similar to format_total_score. Can you use a single FN?
+    #TODO Scores can now go over 100 so alter this
     if running_total.nil?
       "   "
     elsif running_total < 10
       " #{running_total} "
     elsif running_total == 100
-      "#{runnning_total}"
+      "#{running_total}"
     else
       " #{running_total}"
     end

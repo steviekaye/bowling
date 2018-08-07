@@ -22,12 +22,44 @@ class Game
   end
 
   def total_score(turns = @turns)
-    turns.map { |t| t.score_turn }.reduce(0, :+)
+    #turns.map { |t| t.score_turn }.reduce(0, :+)
+
+    turns.each_with_index.map { |t, i|
+      if t.strike?
+        t.score_turn +
+        if turns[i+1].nil?
+          0
+        else
+          if turns[i+1].strike?
+            if turns[i+2].nil?
+              0
+            else
+              10 + turns[i+2].get_first
+            end
+          else
+            turns[i+1].score_turn
+          end
+        end
+      elsif t.spare?
+        t.score_turn +
+        if turns[i+1].nil?
+          0
+        else
+          turns[i+1].get_first
+        end
+      else
+        t.score_turn
+      end
+    }.reduce(0, :+)
   end
 
   def running_total
     @turns.map.with_index { |t, i|
-      @running_total[i] = total_score(@turns[0..i])
+      if @turns[i+1].nil?
+        @running_total[i] = total_score(@turns[0..i])
+      else
+        @running_total[i] = total_score(@turns[0..i+1]) - @turns[i+1].score_turn
+      end
     }
   end
 
