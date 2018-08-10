@@ -13,6 +13,9 @@ class Game
 
     input = gets
     if input == "\n"
+      if is_final_turn?
+        final_turn(turn)
+      end
       record_turn(turn)
     else
       @ui.press_enter
@@ -22,8 +25,6 @@ class Game
   end
 
   def total_score(turns = @turns)
-    #turns.map { |t| t.score_turn }.reduce(0, :+)
-
     turns.each_with_index.map { |t, i|
       if t.strike?
         t.score_turn +
@@ -64,7 +65,7 @@ class Game
   end
 
   def get_running_total
-    @running_total
+    @running_total # TODO look up attr_reader
   end
 
   def game_over?
@@ -76,5 +77,13 @@ class Game
   def record_turn(turn)
     @turns.push(turn)
     running_total
+  end
+
+  def is_final_turn?
+    @turns.length == (Bowling::NUM_TURNS-1)
+  end
+
+  def final_turn(frame)
+    frame.set_final
   end
 end

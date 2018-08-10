@@ -15,9 +15,6 @@ class Bowling
     @game.play_turn until @game.game_over?
 
     @ui.print_end_message(@game.total_score)
-
-    #puts @game.get_running_total
-    #puts "Got here"
   end
 end
 

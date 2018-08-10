@@ -40,17 +40,17 @@ class UI
   end
 
   def scoreboard_frameline(left_corner, cell, right_corner)
-    left_corner + cell * 10 + horizontal_line(4) + right_corner
+    left_corner + cell * 10 + horizontal_line(5) + right_corner
   end
 
   def draw_scoreboard_top_border
-    top_cell = horizontal_line(3) + "┬"
+    top_cell = horizontal_line(5) + "┬"
 
     puts scoreboard_frameline("┌", top_cell, "┐")
   end
 
   def draw_scoreboard_bottom_border
-    bottom_cell = horizontal_line(3) + "┴"
+    bottom_cell = horizontal_line(5) + "┴"
 
     puts scoreboard_frameline("└", bottom_cell, "┘")
   end
@@ -59,11 +59,13 @@ class UI
     mid_std = ""
     pipe = "│"
 
-    Bowling::NUM_TURNS.times do |x|
+    (Bowling::NUM_TURNS-1).times do |x| #(Bowling::NUM_TURNS - 1)
       mid_std += (pipe + format_score(turns[x]))
     end
 
-    mid_std += (pipe + " " + format_running_score(total_score) + pipe)
+    mid_std += (pipe + format_final_turn_score(turns[(Bowling::NUM_TURNS-1)]))
+
+    mid_std += (pipe + format_running_score(total_score) + pipe)
     puts mid_std
   end
 
@@ -71,36 +73,49 @@ class UI
     mid_std = ""
     pipe = "│"
 
-    Bowling::NUM_TURNS.times do |x|
+    (Bowling::NUM_TURNS-1).times do |x| #(Bowling::NUM_TURNS - 1)
       mid_std += (pipe + format_running_score(running_total[x]))
     end
 
-    mid_std += (pipe + " " + format_running_score(total_score) + pipe)
+    mid_std += (pipe + format_running_score(running_total[(Bowling::NUM_TURNS-1)])) # + "   "
+
+    mid_std += (pipe + format_running_score(total_score) + pipe)
     puts mid_std
   end
 
   def format_score(frame)
     if frame.nil?
-      "   "
+      "     "
     elsif frame.strike?
-      "X  "
+      "  X  "
     elsif frame.spare?
-      "#{frame.get_first} /".gsub(/0/, '-')
+      "  #{frame.get_first} /".gsub(/0/, "-")
     else
-      "#{frame.get_first} #{frame.get_second}".gsub(/0/, '-')
+      "  #{frame.get_first} #{frame.get_second}".gsub(/0/, "-")
+    end
+  end
+
+  def format_final_turn_score(frame)
+    if frame.nil?
+      "     "
+    elsif frame.strike?
+      "#{frame.get_first} #{frame.get_second} #{frame.get_bonus}".gsub(/10/, "X").gsub(/0/, "-")
+    elsif frame.spare?
+      "#{frame.get_first} / #{frame.get_bonus}".gsub(/10/, "X").gsub(/0/, "-")
+    else
+      "  #{frame.get_first} #{frame.get_second}".gsub(/0/, "-")
     end
   end
 
   def format_running_score(running_total)
-    #TODO Scores can now go over 100 so alter this
     if running_total.nil?
-      "   "
+      "     "
     elsif running_total < 10
-      " #{running_total} "
-    elsif running_total == 100
-      "#{running_total}"
+      "    #{running_total}"
+    elsif running_total >= 100
+      "  #{running_total}"
     else
-      " #{running_total}"
+      "   #{running_total}"
     end
   end
 end
