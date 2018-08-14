@@ -14,11 +14,11 @@ To run locally, assuming you have Ruby installed:
 ```bash
 git clone git@github.com:steviekaye/bowling.git  
 cd bowling/  
-ruby bowling.rb
+ruby lib/bowling.rb
 ```
 
 To run tests:
 ```bash
 bundle install
-rspec --format documentation
+rspec
 ```
