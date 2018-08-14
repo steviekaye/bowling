@@ -16,3 +16,9 @@ git clone git@github.com:steviekaye/bowling.git
 cd bowling/  
 ruby bowling.rb
 ```
+
+To run tests:
+```bash
+bundle install
+rspec --format documentation
+```
