@@ -1,4 +1,6 @@
 class Frame
+  attr_reader :final
+
   def initialize
     @final = false
     @frame = bowl
@@ -13,7 +15,7 @@ class Frame
   end
 
   def score_turn
-    if is_final?
+    if @final
       @frame[0] + @frame[1] + @frame[2]
     else
       @frame[0] + @frame[1]
@@ -32,9 +34,9 @@ class Frame
     @frame[2]
   end
 
-  def set_final
+  def complete_final_turn
     @final = true
-    if self.strike?
+    if strike?
       bonus_one = bowl
       if bonus_one[0] == 10
         bonus_two = bowl
@@ -42,16 +44,12 @@ class Frame
       else
         @frame = [10, bonus_one[0], bonus_one[1]] # = [@frame[0], bonus_one[0], bonus_one[1]]
       end
-    elsif self.spare?
+    elsif spare?
       bonus_one = bowl
       @frame = [@frame[0], @frame[1], bonus_one[0]]
     else
       @frame = [@frame[0], @frame[1], 0]
     end
-  end
-
-  def is_final?
-    @final
   end
 
   private

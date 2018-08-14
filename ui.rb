@@ -3,7 +3,7 @@ class UI
   end
 
   def print_welcome_message
-    system "clear"
+    clear_console
     puts "Welcome to SK's bowling alley!"
   end
 
@@ -16,11 +16,15 @@ class UI
   end
 
   def print_scoreboard(turns, running_total, total_score)
-    system "clear"
+    clear_console
     draw_scoreboard_top_border
-    draw_scoreboard_frame_score(turns, total_score)
+    draw_scoreboard_turn_score(turns, total_score)
     draw_scoreboard_running_total(turns, running_total, total_score)
     draw_scoreboard_bottom_border
+  end
+
+  def clear_console
+    system "clear"
   end
 
   def print_end_message(score)
@@ -55,15 +59,15 @@ class UI
     puts scoreboard_frameline("└", bottom_cell, "┘")
   end
 
-  def draw_scoreboard_frame_score(turns, total_score)
+  def draw_scoreboard_turn_score(turns, total_score)
     mid_std = ""
     pipe = "│"
 
-    (Bowling::NUM_TURNS-1).times do |x| #(Bowling::NUM_TURNS - 1)
+    (Bowling::NUM_TURNS - 1).times do |x|
       mid_std += (pipe + format_score(turns[x]))
     end
 
-    mid_std += (pipe + format_final_turn_score(turns[(Bowling::NUM_TURNS-1)]))
+    mid_std += (pipe + format_final_turn_score(turns[(Bowling::NUM_TURNS - 1)]))
 
     mid_std += (pipe + format_running_score(total_score) + pipe)
     puts mid_std
@@ -73,11 +77,11 @@ class UI
     mid_std = ""
     pipe = "│"
 
-    (Bowling::NUM_TURNS-1).times do |x| #(Bowling::NUM_TURNS - 1)
+    (Bowling::NUM_TURNS - 1).times do |x|
       mid_std += (pipe + format_running_score(running_total[x]))
     end
 
-    mid_std += (pipe + format_running_score(running_total[(Bowling::NUM_TURNS-1)])) # + "   "
+    mid_std += (pipe + format_running_score(running_total[(Bowling::NUM_TURNS - 1)]))
 
     mid_std += (pipe + format_running_score(total_score) + pipe)
     puts mid_std
@@ -108,14 +112,6 @@ class UI
   end
 
   def format_running_score(running_total)
-    if running_total.nil?
-      "     "
-    elsif running_total < 10
-      "    #{running_total}"
-    elsif running_total >= 100
-      "  #{running_total}"
-    else
-      "   #{running_total}"
-    end
+    running_total.to_s.rjust(5)
   end
 end
