@@ -8,14 +8,12 @@ class Game
   end
 
   def play_turn
-    turn = Frame.new
+    # turn = Frame.new(bowl)
     @ui.print_turn_instructions
 
     input = gets
     if input == "\n"
-      if final_turn?
-        turn.complete_final_turn
-      end
+      turn = Frame.new(bowl)
       record_turn(turn)
     else
       @ui.press_enter
@@ -27,7 +25,7 @@ class Game
   def total_score(turns = @turns)
     turns.each_with_index.map { |t, i|
       if t.strike?
-        t.score_turn +
+        t.score_frame +
         if turns[i + 1].nil?
           0
         else
@@ -38,18 +36,18 @@ class Game
               10 + turns[i + 2].get_first
             end
           else
-            turns[i + 1].score_turn
+            turns[i + 1].score_frame
           end
         end
       elsif t.spare?
-        t.score_turn +
+        t.score_frame +
         if turns[i + 1].nil?
           0
         else
           turns[i + 1].get_first
         end
       else
-        t.score_turn
+        t.score_frame
       end
     }.reduce(0, :+)
   end
@@ -59,7 +57,7 @@ class Game
       if @turns[i + 1].nil?
         @running_total[i] = total_score(@turns[0..i])
       else
-        @running_total[i] = total_score(@turns[0..i + 1]) - @turns[i + 1].score_turn
+        @running_total[i] = total_score(@turns[0..i + 1]) - @turns[i + 1].score_frame
       end
     }
   end
@@ -78,4 +76,36 @@ class Game
   def final_turn?
     @turns.length == (Bowling::NUM_TURNS - 1)
   end
+
+  def bowl()
+    first = rand(11)
+    second = second_ball(first)
+    if (!final_turn?)
+      [first, second]
+    else
+      if first == 10
+        bonus_one = rand(11)
+        if bonus_one == 10
+          bonus_two = rand(11)
+          [first, bonus_one, bonus_two]
+        else
+          [first, bonus_one, second_ball(bonus_one)]
+        end
+      elsif (first + second) == 10
+        bonus_one = rand(11)
+        [first, second, bonus_one]
+      else
+        [first, second, 0]
+      end
+    end
+  end
+
+  def second_ball(first_ball)
+    if first_ball == 10
+      0
+    else
+      rand(11 - first_ball)
+    end
+  end
+
 end

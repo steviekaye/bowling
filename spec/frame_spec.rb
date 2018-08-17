@@ -2,54 +2,68 @@
 require "frame"
 
 describe Frame do
-  let(:f1) { Frame.new() }
-
   describe "#strike?" do
     context "When given a strike" do
+      let(:frame) { Frame.new([10, 0]) }
       it {
-        f1.instance_variable_set(:@frame, [10, 0])
-        expect(f1.strike?).to be true
+        expect(frame.strike?).to be true
       }
     end
 
     context "When given a non-strike" do
+      let(:frame) { Frame.new([8, 2]) }
       it {
-        f1.instance_variable_set(:@frame, [8, 2])
-        expect(f1.strike?).to be false
+        expect(frame.strike?).to be false
       }
     end
   end
 
   describe "#spare?" do
     context "When given a spare" do
+      let(:frame) { Frame.new([8, 2]) }
       it {
-        f1.instance_variable_set(:@frame, [8, 2])
-        expect(f1.spare?).to be true
+        expect(frame.spare?).to be true
       }
     end
 
     context "When given a non-spare" do
+      let(:frame) { Frame.new([8, 1]) }
       it {
-        f1.instance_variable_set(:@frame, [8, 1])
-        expect(f1.strike?).to be false
+        expect(frame.spare?).to be false
       }
     end
   end
 
   describe "#get_first" do
     context "When getting the first ball of frame [8,2]" do
+      let(:frame) { Frame.new([8, 2]) }
       it {
-        f1.instance_variable_set(:@frame, [8, 2])
-        expect(f1.get_first).to eql(8)
+        expect(frame.get_first).to eql(8)
       }
     end
   end
 
   describe "#get_second" do
     context "When getting the second ball of frame [8,2]" do
+      let(:frame) { Frame.new([8, 2]) }
       it {
-        f1.instance_variable_set(:@frame, [8, 2])
-        expect(f1.get_second).to eql(2)
+        expect(frame.get_second).to eql(2)
+      }
+    end
+  end
+
+  describe "#score_frame" do
+    context "When given a frame of size two ([7,2])" do
+      let(:frame) { Frame.new([7, 2]) }
+      it {
+        expect(frame.score_frame).to eql(9)
+      }
+    end
+
+    context "When given a frame of size three ([10,4,3])" do
+      let(:frame) { Frame.new([10, 4, 3]) }
+      it {
+        expect(frame.score_frame).to eql(17)
       }
     end
   end
