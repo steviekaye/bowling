@@ -7,7 +7,6 @@ This is an exercise in learning Ruby and methodically refactoring code. After in
 Check out the [before](https://github.com/steviekaye/bowling/blob/6d5d4dcd454b280f391cb4da664504e62094b8de/bowling.rb) and [after](https://github.com/steviekaye/bowling).
 
 #### To do:  
-* Apply proper scoring for strikes and spares.  
 * Write test suites.  
 
 To run locally, assuming you have Ruby installed:  

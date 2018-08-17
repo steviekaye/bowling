@@ -4,8 +4,6 @@ require "frame"
 describe Frame do
   let(:f1) { Frame.new() }
 
-  let(:f2) { Frame.new() }
-
   describe "#strike?" do
     context "When given a strike" do
       it {
@@ -16,8 +14,8 @@ describe Frame do
 
     context "When given a non-strike" do
       it {
-        f2.instance_variable_set(:@frame, [8, 2])
-        expect(f2.strike?).to be false
+        f1.instance_variable_set(:@frame, [8, 2])
+        expect(f1.strike?).to be false
       }
     end
   end
@@ -32,8 +30,8 @@ describe Frame do
 
     context "When given a non-spare" do
       it {
-        f2.instance_variable_set(:@frame, [8, 1])
-        expect(f2.strike?).to be false
+        f1.instance_variable_set(:@frame, [8, 1])
+        expect(f1.strike?).to be false
       }
     end
   end
