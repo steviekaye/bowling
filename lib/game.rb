@@ -26,6 +26,20 @@ class Game
   end
 
   def cumulative_total(turns)
+    scored_turns = score_turns(turns)
+
+    scored_turns.map.with_index do |t, i|
+      scored_turns.slice(0, i + 1).reduce(0, :+)
+    end
+  end
+
+  def game_over?
+    @turns.length == Bowling::NUM_TURNS
+  end
+
+  private
+
+  def score_turns(turns)
     turns.each_with_index.map do |t, i|
       next_turn = turns[i + 1]
       second_next_turn = turns[i + 2]
@@ -48,18 +62,12 @@ class Game
       else
         t.score_frame
       end
-    end.reduce(0, :+)
+    end
   end
-
-  def game_over?
-    @turns.length == Bowling::NUM_TURNS
-  end
-
-  private
 
   def record_turn(turn)
     @turns.push(turn)
-    @running_total.push(cumulative_total(@turns))
+    @running_total = cumulative_total(@turns)
   end
 
   def final_turn?

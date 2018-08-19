@@ -16,121 +16,120 @@ describe Game do
     context "When the turns played include ordinary frames" do
       let(:turns) { [frame, frame, frame] }
       it {
-        expect(game.cumulative_total(turns)).to eq(24)
+        expect(game.cumulative_total(turns)).to eq([8, 16, 24])
       }
     end
 
     context "When the turns played includes a spare" do
       let(:turns) { [spare, frame, frame] }
       it {
-        expect(game.cumulative_total(turns)).to eq(31)
+        expect(game.cumulative_total(turns)).to eq([15, 23, 31])
       }
     end
 
     context "When the turns include two spares in a row" do
       let(:turns) { [spare, spare, frame] }
       it {
-        expect(game.cumulative_total(turns)).to eq(17 + 15 + 8)
+        expect(game.cumulative_total(turns)).to eq([17, 32, 40])
       }
     end
 
     context "When the turns played includes a spare as the most recent (but not final) turn" do
       let(:turns) { [frame, frame, spare] }
       it {
-        expect(game.cumulative_total(turns)).to eq(26)
+        expect(game.cumulative_total(turns)).to eq([8, 16, 26])
       }
     end
 
     context "when the turns played includes a strike" do
       let(:turns) { [strike, frame, frame] }
       it {
-        expect(game.cumulative_total(turns)).to eq(34)
+        expect(game.cumulative_total(turns)).to eq([18, 26, 34])
       }
     end
 
     context "when the turns played includes a strike as the most recent (but not final) turn" do
       let(:turns) { [frame, frame, strike] }
       it {
-        expect(game.cumulative_total(turns)).to eq(26)
+        expect(game.cumulative_total(turns)).to eq([8, 16, 26])
       }
     end
 
     context "when the turns played includes a strike and then a spare" do
       let(:turns) { [strike, spare, frame] }
       it {
-        expect(game.cumulative_total(turns)).to eq(20 + 15 + 8)
+        expect(game.cumulative_total(turns)).to eq([20, 35, 43])
       }
     end
 
     context "when the turns played includes a spare and then a strike" do
       let(:turns) { [spare, strike, frame] }
       it {
-        expect(game.cumulative_total(turns)).to eq(20 + 18 + 8)
+        expect(game.cumulative_total(turns)).to eq([20, 38, 46])
       }
     end
 
     context "when the turns played includes two successive strikes" do
       let(:turns) { [strike, strike, frame] }
       it {
-        expect(game.cumulative_total(turns)).to eq(51)
+        expect(game.cumulative_total(turns)).to eq([25, 43, 51])
       }
     end
 
     context "when the turns played includes two successive strikes as the most recent (but not final) two turns" do
       let(:turns) { [frame, strike, strike] }
       it {
-        expect(game.cumulative_total(turns)).to eq(38)
+        expect(game.cumulative_total(turns)).to eq([8, 28, 38])
       }
     end
 
     context "when the turns played are a full game with a non-bonus final turn" do
       let(:turns) { Array.new(9, frame).push(final_normal) }
       it {
-        expect(game.cumulative_total(turns)).to eq(80)
+        expect(game.cumulative_total(turns)).to eq([8, 16, 24, 32, 40, 48, 56, 64, 72, 80])
       }
     end
 
     context "when the turns played are a full game with a spare final turn" do
       let(:turns) { Array.new(9, frame).push(final_spare) }
       it {
-        expect(game.cumulative_total(turns)).to eq(72 + 17)
+        expect(game.cumulative_total(turns)).to eq([8, 16, 24, 32, 40, 48, 56, 64, 72, 89])
       }
     end
 
     context "when the turns played are a full game with a single strike final turn" do
       let(:turns) { Array.new(9, frame).push(final_single_strike) }
       it {
-        expect(game.cumulative_total(turns)).to eq(72 + 15)
+        expect(game.cumulative_total(turns)).to eq([8, 16, 24, 32, 40, 48, 56, 64, 72, 87])
       }
     end
 
     context "when the turns played are a full game with a strike plus spare final turn" do
       let(:turns) { Array.new(9, frame).push(final_strike_spare) }
       it {
-        expect(game.cumulative_total(turns)).to eq(72 + 20)
+        expect(game.cumulative_total(turns)).to eq([8, 16, 24, 32, 40, 48, 56, 64, 72, 92])
       }
     end
 
     context "when the turns played are a full game with a triple strike final turn" do
       let(:turns) { Array.new(9, frame).push(final_triple_strike) }
       it {
-        expect(game.cumulative_total(turns)).to eq(72 + 30)
+        expect(game.cumulative_total(turns)).to eq([8, 16, 24, 32, 40, 48, 56, 64, 72, 102])
       }
     end
 
     context "when the turns played are a nine-turn game with all strikes" do
       let(:turns) { Array.new(9, strike) }
       it {
-        expect(game.cumulative_total(turns)).to eq(30*7 + 20 + 10)
+        expect(game.cumulative_total(turns)).to eq([30, 60, 90, 120, 150, 180, 210, 230, 240])
       }
     end
 
     context "when the turns played are a full game with all strikes" do
       let(:turns) { Array.new(9, strike).push(final_triple_strike) }
       it {
-        expect(game.cumulative_total(turns)).to eq(30*9 + 30)
+        expect(game.cumulative_total(turns)).to eq([30, 60, 90, 120, 150, 180, 210, 240, 270, 300])
       }
     end
-
   end
 end
