@@ -2,122 +2,135 @@ require "game"
 require "frame"
 
 describe Game do
-  #let(:t1) { [[3, 5], [5, 0], [9, 0], [3, 5], [3, 1], [2, 8], [1, 2], [10, 0], [4, 0], [8, 1]] }
-  let(:f1) { Frame.new() }
-  let(:f2) { Frame.new() }
-  let(:f3) { Frame.new() }
-  let(:f4) { Frame.new() }
-  let(:f5) { Frame.new() }
-  let(:f6) { Frame.new() }
-  let(:f7) { Frame.new() }
-  let(:f8) { Frame.new() }
-  let(:f9) { Frame.new() }
-  let(:f10) { Frame.new() }
-  let(:t1) { [f1, f2] }
-  let(:t2) { [f1, f2, f3, f4] }
-  let(:t3) { [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10] }
+  describe "#cumulative_total" do
+    let(:game) { Game.new(double("blah")) }
+    let(:frame) { Frame.new([5, 3]) }
+    let(:spare) { Frame.new([7, 3]) }
+    let(:strike) { Frame.new([10, 0]) }
+    let(:final_normal) { Frame.new([6, 2, 0]) }
+    let(:final_spare) { Frame.new([6, 4, 7]) }
+    let(:final_single_strike) { Frame.new([10, 4, 1]) }
+    let(:final_strike_spare) { Frame.new([10, 5, 5]) }
+    let(:final_triple_strike) { Frame.new([10, 10, 10]) }
 
-
-  describe "#total_score" do
-    context "When given two turns with a total score of 13" do
+    context "When the turns played include ordinary frames" do
+      let(:turns) { [frame, frame, frame] }
       it {
-        f1.instance_variable_set(:@frame, [3, 5])
-        f2.instance_variable_set(:@frame, [5, 0])
-
-        expect(Game.new(double("blah")).total_score(t1)).to eql(13)
+        expect(game.cumulative_total(turns)).to eq(24)
       }
     end
 
-    context "When given two turns (with a strike) with a total score of 22" do
+    context "When the turns played includes a spare" do
+      let(:turns) { [spare, frame, frame] }
       it {
-        f1.instance_variable_set(:@frame, [10, 0])
-        f2.instance_variable_set(:@frame, [4, 2])
-
-        expect(Game.new(double("blah")).total_score(t1)).to eql(22)
+        expect(game.cumulative_total(turns)).to eq(31)
       }
     end
 
-    context "When given two turns (with two strikes) with a total score of 20" do
+    context "When the turns include two spares in a row" do
+      let(:turns) { [spare, spare, frame] }
       it {
-        f1.instance_variable_set(:@frame, [10, 0])
-        f2.instance_variable_set(:@frame, [10, 0])
-
-        expect(Game.new(double("blah")).total_score(t1)).to eql(20)
+        expect(game.cumulative_total(turns)).to eq(17 + 15 + 8)
       }
     end
 
-    context "When given two turns (with a spare) with a total score of 20" do
+    context "When the turns played includes a spare as the most recent (but not final) turn" do
+      let(:turns) { [frame, frame, spare] }
       it {
-        f1.instance_variable_set(:@frame, [7, 3])
-        f2.instance_variable_set(:@frame, [4, 2])
-
-        expect(Game.new(double("blah")).total_score(t1)).to eql(20)
+        expect(game.cumulative_total(turns)).to eq(26)
       }
     end
 
-    context "When given four turns (with three strikes) with a total score of 76" do
+    context "when the turns played includes a strike" do
+      let(:turns) { [strike, frame, frame] }
       it {
-        f1.instance_variable_set(:@frame, [10, 0])
-        f2.instance_variable_set(:@frame, [10, 0])
-        f3.instance_variable_set(:@frame, [10, 0])
-        f4.instance_variable_set(:@frame, [4, 2])
-
-        expect(Game.new(double("blah")).total_score(t2)).to eql(76)
+        expect(game.cumulative_total(turns)).to eq(34)
       }
     end
 
-    context "When given a full set of turns equal to 75" do
+    context "when the turns played includes a strike as the most recent (but not final) turn" do
+      let(:turns) { [frame, frame, strike] }
       it {
-        f1.instance_variable_set(:@frame, [3, 5])
-        f2.instance_variable_set(:@frame, [5, 0])
-        f3.instance_variable_set(:@frame, [9, 0])
-        f4.instance_variable_set(:@frame, [3, 5])
-        f5.instance_variable_set(:@frame, [3, 1])
-        f6.instance_variable_set(:@frame, [2, 8])
-        f7.instance_variable_set(:@frame, [1, 2])
-        f8.instance_variable_set(:@frame, [10, 0])
-        f9.instance_variable_set(:@frame, [4, 0])
-        f10.instance_variable_set(:@frame, [8, 1])
-
-        expect(Game.new(double("blah")).total_score(t3)).to eql(75)
-      }
-    end
-  end
-
-  describe "#running_total" do
-    let(:g1) { Game.new(double("blah")) }
-
-    context "When given two turns with a running total of [8,13]" do
-      it {
-        f1.instance_variable_set(:@frame, [3, 5])
-        f2.instance_variable_set(:@frame, [5, 0])
-        g1.instance_variable_set(:@turns, [f1, f2])
-
-        expect(g1.running_total).to eq([8, 13])
+        expect(game.cumulative_total(turns)).to eq(26)
       }
     end
 
-    context "When given three turns (with three strikes) with a total score of 60" do
+    context "when the turns played includes a strike and then a spare" do
+      let(:turns) { [strike, spare, frame] }
       it {
-        f1.instance_variable_set(:@frame, [10, 0])
-        f2.instance_variable_set(:@frame, [10, 0])
-        f3.instance_variable_set(:@frame, [10, 0])
-        g1.instance_variable_set(:@turns, [f1,f2,f3])
-
-        expect(g1.running_total).to eq([30, 50, 60])
+        expect(game.cumulative_total(turns)).to eq(20 + 15 + 8)
       }
     end
 
-    context "When given four turns (with three strikes) with a total score of 76" do
+    context "when the turns played includes a spare and then a strike" do
+      let(:turns) { [spare, strike, frame] }
       it {
-        f1.instance_variable_set(:@frame, [10, 0])
-        f2.instance_variable_set(:@frame, [10, 0])
-        f3.instance_variable_set(:@frame, [10, 0])
-        f4.instance_variable_set(:@frame, [4, 2])
-        g1.instance_variable_set(:@turns, t2)
-
-        expect(g1.running_total).to eq([30, 54, 70, 76])
+        expect(game.cumulative_total(turns)).to eq(20 + 18 + 8)
       }
     end
+
+    context "when the turns played includes two successive strikes" do
+      let(:turns) { [strike, strike, frame] }
+      it {
+        expect(game.cumulative_total(turns)).to eq(51)
+      }
+    end
+
+    context "when the turns played includes two successive strikes as the most recent (but not final) two turns" do
+      let(:turns) { [frame, strike, strike] }
+      it {
+        expect(game.cumulative_total(turns)).to eq(38)
+      }
+    end
+
+    context "when the turns played are a full game with a non-bonus final turn" do
+      let(:turns) { Array.new(9, frame).push(final_normal) }
+      it {
+        expect(game.cumulative_total(turns)).to eq(80)
+      }
+    end
+
+    context "when the turns played are a full game with a spare final turn" do
+      let(:turns) { Array.new(9, frame).push(final_spare) }
+      it {
+        expect(game.cumulative_total(turns)).to eq(72 + 17)
+      }
+    end
+
+    context "when the turns played are a full game with a single strike final turn" do
+      let(:turns) { Array.new(9, frame).push(final_single_strike) }
+      it {
+        expect(game.cumulative_total(turns)).to eq(72 + 15)
+      }
+    end
+
+    context "when the turns played are a full game with a strike plus spare final turn" do
+      let(:turns) { Array.new(9, frame).push(final_strike_spare) }
+      it {
+        expect(game.cumulative_total(turns)).to eq(72 + 20)
+      }
+    end
+
+    context "when the turns played are a full game with a triple strike final turn" do
+      let(:turns) { Array.new(9, frame).push(final_triple_strike) }
+      it {
+        expect(game.cumulative_total(turns)).to eq(72 + 30)
+      }
+    end
+
+    context "when the turns played are a nine-turn game with all strikes" do
+      let(:turns) { Array.new(9, strike) }
+      it {
+        expect(game.cumulative_total(turns)).to eq(30*7 + 20 + 10)
+      }
+    end
+
+    context "when the turns played are a full game with all strikes" do
+      let(:turns) { Array.new(9, strike).push(final_triple_strike) }
+      it {
+        expect(game.cumulative_total(turns)).to eq(30*9 + 30)
+      }
+    end
+
   end
 end

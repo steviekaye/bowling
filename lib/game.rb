@@ -8,7 +8,6 @@ class Game
   end
 
   def play_turn
-    # turn = Frame.new(bowl)
     @ui.print_turn_instructions
 
     input = gets
@@ -22,44 +21,34 @@ class Game
     @ui.print_scoreboard(@turns, @running_total, total_score)
   end
 
-  def total_score(turns = @turns)
-    turns.each_with_index.map { |t, i|
-      if t.strike?
-        t.score_frame +
-        if turns[i + 1].nil?
-          0
+  def total_score
+    @running_total[-1]
+  end
+
+  def cumulative_total(turns)
+    turns.each_with_index.map do |t, i|
+      next_turn = turns[i + 1]
+      second_next_turn = turns[i + 2]
+
+      if t.strike? && next_turn && second_next_turn
+        if next_turn.strike?
+          t.score_frame + next_turn.score_frame + second_next_turn.get_first
         else
-          if turns[i + 1].strike?
-            if turns[i + 2].nil?
-              0
-            else
-              10 + turns[i + 2].get_first
-            end
-          else
-            turns[i + 1].score_frame
-          end
+          t.score_frame + next_turn.score_frame
         end
-      elsif t.spare?
-        t.score_frame +
-        if turns[i + 1].nil?
-          0
+      elsif t.strike? && next_turn
+        # edge case of final turn having a strike or a spare - we don't want the third ball
+        if next_turn.frame.length == 3
+          t.score_frame + next_turn.get_first + next_turn.get_second
         else
-          turns[i + 1].get_first
+          t.score_frame + next_turn.score_frame
         end
+      elsif t.spare? && next_turn
+        t.score_frame + next_turn.get_first
       else
         t.score_frame
       end
-    }.reduce(0, :+)
-  end
-
-  def running_total
-    @turns.map.with_index { |t, i|
-      if @turns[i + 1].nil?
-        @running_total[i] = total_score(@turns[0..i])
-      else
-        @running_total[i] = total_score(@turns[0..i + 1]) - @turns[i + 1].score_frame
-      end
-    }
+    end.reduce(0, :+)
   end
 
   def game_over?
@@ -70,33 +59,21 @@ class Game
 
   def record_turn(turn)
     @turns.push(turn)
-    running_total
+    @running_total.push(cumulative_total(@turns))
   end
 
   def final_turn?
     @turns.length == (Bowling::NUM_TURNS - 1)
   end
 
-  def bowl()
+  def bowl
     first = rand(11)
     second = second_ball(first)
-    if (!final_turn?)
-      [first, second]
+
+    if final_turn?
+      bowl_final_turn(first, second)
     else
-      if first == 10
-        bonus_one = rand(11)
-        if bonus_one == 10
-          bonus_two = rand(11)
-          [first, bonus_one, bonus_two]
-        else
-          [first, bonus_one, second_ball(bonus_one)]
-        end
-      elsif (first + second) == 10
-        bonus_one = rand(11)
-        [first, second, bonus_one]
-      else
-        [first, second, 0]
-      end
+      [first, second]
     end
   end
 
@@ -108,4 +85,19 @@ class Game
     end
   end
 
+  def bowl_final_turn(first_ball, second_ball)
+    if first_ball == 10
+      bonus_ball = rand(11)
+
+      if bonus_ball == 10
+        [first_ball, bonus_ball, rand(11)]
+      else
+        [first_ball, bonus_ball, second_ball(bonus_ball)]
+      end
+    elsif first_ball + second_ball == 10
+      [first_ball, second_ball, rand(11)]
+    else
+      [first_ball, second_ball, 0]
+    end
+  end
 end

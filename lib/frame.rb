@@ -1,4 +1,6 @@
 class Frame
+  attr_reader :frame
+
   def initialize(bowl)
     @frame = bowl
   end
