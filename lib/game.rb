@@ -18,7 +18,7 @@ class Game
       @ui.press_enter
     end
 
-    @ui.print_scoreboard(@turns, @running_total, total_score)
+    print_scoreboard
   end
 
   def total_score
@@ -106,6 +106,28 @@ class Game
       [first_ball, second_ball, rand(11)]
     else
       [first_ball, second_ball, 0]
+    end
+  end
+
+  def print_scoreboard
+    if @turns[-1].frame.length == 3
+      @ui.print_scoreboard(@turns, @running_total, @running_total[-1])
+    else
+      if @turns[-1].strike?
+        if @turns.length > 1
+          if @turns[-2].strike?
+            @ui.print_scoreboard(@turns, @running_total[0...-2], @running_total[-3])
+          else
+            @ui.print_scoreboard(@turns, @running_total[0...-1], @running_total[-2])
+          end
+        else
+          @ui.print_scoreboard(@turns, @running_total[0...-1], @running_total[-2])
+        end
+      elsif @turns[-1].spare?
+        @ui.print_scoreboard(@turns, @running_total[0...-1], @running_total[-2])
+      else
+        @ui.print_scoreboard(@turns, @running_total, @running_total[-1])
+      end
     end
   end
 end

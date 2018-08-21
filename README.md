@@ -12,9 +12,6 @@ This is an exercise in learning Ruby and methodically refactoring code. After in
 
 Check out the [before](https://github.com/steviekaye/bowling/blob/6d5d4dcd454b280f391cb4da664504e62094b8de/bowling.rb) and [after](https://github.com/steviekaye/bowling/lib).
 
-#### To do:  
-* Make cumulative scoring match online bowling calculators (i.e. not display the score for strike turns until all relevant balls have been bowled).  
-
 To run locally, assuming you have Ruby installed:  
 ```bash
 git clone git@github.com:steviekaye/bowling.git  
