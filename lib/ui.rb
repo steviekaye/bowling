@@ -1,7 +1,4 @@
 class UI
-  def initialize
-  end
-
   def print_welcome_message
     clear_console
     puts "Welcome to SK's bowling alley!"
@@ -18,7 +15,7 @@ class UI
   def print_scoreboard(turns, running_total, total_score)
     clear_console
     draw_scoreboard_top_border
-    draw_scoreboard_turn_score(turns, total_score)
+    draw_scoreboard_turn_score(turns)
     draw_scoreboard_running_total(turns, running_total, total_score)
     draw_scoreboard_bottom_border
   end
@@ -28,9 +25,11 @@ class UI
   end
 
   def print_end_message(score)
-    if score > 85
+    if score > 250
+      puts "Unbelievable! You are Ripley herself!"
+    elsif score > 100
       puts "Great work! You are the Aliens of bowling!"
-    elsif score > 72
+    elsif score > 75
       puts "Not bad! You are the Alien 3 of bowling!"
     else
       puts "Room for improvement! You are the Alien: Resurrection of bowling!"
@@ -59,7 +58,7 @@ class UI
     puts scoreboard_frameline("└", bottom_cell, "┘")
   end
 
-  def draw_scoreboard_turn_score(turns, total_score)
+  def draw_scoreboard_turn_score(turns)
     mid_std = ""
     pipe = "│"
 
@@ -69,7 +68,7 @@ class UI
 
     mid_std += (pipe + format_final_turn_score(turns[(Bowling::NUM_TURNS - 1)]))
 
-    mid_std += (pipe + format_running_score(total_score) + pipe)
+    mid_std += (pipe + "     " + pipe)
     puts mid_std
   end
 
