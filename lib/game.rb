@@ -18,7 +18,7 @@ class Game
       @ui.press_enter
     end
 
-    print_scoreboard
+    @ui.print_scoreboard(@turns, @running_total, total_score)
   end
 
   def total_score
@@ -28,9 +28,11 @@ class Game
   def cumulative_total(turns)
     scored_turns = score_turns(turns)
 
-    scored_turns.map.with_index do |t, i|
+    cumulative_scores = scored_turns.map.with_index do |t, i|
       scored_turns.slice(0, i + 1).reduce(0, :+)
     end
+
+    completed_scores(turns, cumulative_scores)
   end
 
   def game_over?
@@ -38,6 +40,27 @@ class Game
   end
 
   private
+
+  def completed_scores(turns, cumulative_scores)
+    last_frame = turns[-1]
+    second_to_last_frame = turns[-2]
+
+    if last_frame.frame.length == 3
+      cumulative_scores
+    elsif second_to_last_frame
+      if second_to_last_frame.strike? && last_frame.strike?
+        cumulative_scores[0...-2]
+      elsif last_frame.strike? || last_frame.spare?
+        cumulative_scores[0...-1]
+      else
+        cumulative_scores
+      end
+    elsif last_frame.strike? || last_frame.spare?
+      cumulative_scores[0...-1]
+    else
+      cumulative_scores
+    end
+  end
 
   def score_turns(turns)
     turns.each_with_index.map do |t, i|
@@ -106,28 +129,6 @@ class Game
       [first_ball, second_ball, rand(11)]
     else
       [first_ball, second_ball, 0]
-    end
-  end
-
-  def print_scoreboard
-    if @turns[-1].frame.length == 3
-      @ui.print_scoreboard(@turns, @running_total, @running_total[-1])
-    else
-      if @turns[-1].strike?
-        if @turns.length > 1
-          if @turns[-2].strike?
-            @ui.print_scoreboard(@turns, @running_total[0...-2], @running_total[-3])
-          else
-            @ui.print_scoreboard(@turns, @running_total[0...-1], @running_total[-2])
-          end
-        else
-          @ui.print_scoreboard(@turns, @running_total[0...-1], @running_total[-2])
-        end
-      elsif @turns[-1].spare?
-        @ui.print_scoreboard(@turns, @running_total[0...-1], @running_total[-2])
-      else
-        @ui.print_scoreboard(@turns, @running_total, @running_total[-1])
-      end
     end
   end
 end
